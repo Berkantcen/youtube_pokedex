@@ -50,15 +50,6 @@ button {
   cursor: pointer;
 }
 
-select {
-  font-size: 1rem;
-  padding: 14.5px 15px;
-  border: none;
-  outline: none;
-  font-weight: bold;
-  background-color: #fff;
-}
-
 .poke-container {
   width: 100%;
   display: flex;
@@ -114,4 +105,59 @@ select {
 
 .nav-button:hover {
   background-color: rgba(255, 255, 255, 0.4);
+}
+
+.github-ribbon {
+  position: absolute;
+}
+
+.poke-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.poke-footer span {
+  margin-bottom: 15px;
+}
+
+.back-to-top-button {
+  cursor: pointer;
+  display: inline-block;
+  background-color: #ff9800;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  border-radius: 4px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  transition: background-color 0.3s, opacity 0.5s, visibility 0.5s;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1000;
+}
+
+.back-to-top-button::after {
+  content: "\f077";
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 2em;
+  line-height: 50px;
+  color: #fff;
+}
+
+.back-to-top-button:hover {
+  cursor: pointer;
+  background-color: #333;
+}
+
+.back-to-top-button:active {
+  background-color: #555;
+}
+
+.back-to-top-button.show {
+  opacity: 1;
+  visibility: visible;
 }

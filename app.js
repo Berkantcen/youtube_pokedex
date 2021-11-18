@@ -1,12 +1,13 @@
 const pokeSearchForm = document.querySelector("#poke-search-form");
 const pokeContainer = document.querySelector(".poke-container");
+const toTopBtn = document.querySelector(".back-to-top-button");
 const searchInput = document.querySelector("#search-input");
 const searchBtn = document.querySelector(".search-btn");
-const pokeCount = document.querySelector(".poke-count");
-const prevBtn = document.querySelector("#prev-button");
-const nextBtn = document.querySelector("#next-button");
+const loadBtn = document.querySelector("#load-button");
 
-let page = 1;
+const pokePerPage = 10;
+const pokedexURL = `https://pokeapi.co/api/v2/pokemon?limit=${pokePerPage}&offset=0`;
+let nextPageURL;
 
 const colors = {
   fire: "#FDDFDF",
@@ -26,23 +27,20 @@ const colors = {
   ice: "#e0f5ff ",
 };
 
-const loadPokedex = async (pageNumber = 1) => {
-  const pokePerPage = pokeCount.value;
-  const url = `https://pokeapi.co/api/v2/pokemon?limit=${pokePerPage}&offset=${
-    pokePerPage * (pageNumber - 1)
-  }`;
+const loadPokedex = async (loadNext = false) => {
+  const url = loadNext ? nextPageURL : pokedexURL;
   const response = await fetch(url);
-  const { results, next, previous } = await response.json();
+  const { results, next } = await response.json();
+
+  nextPageURL = next;
 
   return {
     results,
-    next,
-    previous,
   };
 };
 
-const loadPokemons = async (pageNumber) => {
-  const { results } = await loadPokedex(pageNumber);
+const loadPokemons = async (loadNext) => {
+  const { results } = await loadPokedex(loadNext);
 
   for (const pokemon of results) {
     await getPokemon(pokemon);
@@ -103,22 +101,17 @@ searchInput.addEventListener("input", function () {
   });
 });
 
-prevBtn.addEventListener("click", () => {
-  if (page > 1) {
-    clearAllPokemons();
-
-    page = page - 1; // Decrement page
-
-    loadPokemons(page); // Load previous page
-  }
+loadBtn.addEventListener("click", () => {
+  loadPokemons(true); // Load next pokemons
 });
 
-nextBtn.addEventListener("click", () => {
-  clearAllPokemons();
-
-  page = page + 1; // Increment page
-
-  loadPokemons(page); // Load next page
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) toTopBtn.classList.add("show");
+  else toTopBtn.classList.remove("show");
 });
 
-loadPokemons(page);
+toTopBtn.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+loadPokemons();
