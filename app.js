@@ -1,8 +1,12 @@
+const pokeSearchForm = document.querySelector("#poke-search-form");
 const pokeContainer = document.querySelector(".poke-container");
 const searchInput = document.querySelector("#search-input");
 const searchBtn = document.querySelector(".search-btn");
+const pokeCount = document.querySelector(".poke-count");
+const prevBtn = document.querySelector("#prev-button");
+const nextBtn = document.querySelector("#next-button");
 
-const pokeCount = 151;
+let page = 1;
 
 const colors = {
   fire: "#FDDFDF",
@@ -22,16 +26,33 @@ const colors = {
   ice: "#e0f5ff ",
 };
 
-const initPokemon = async () => {
-  for (i = 1; i <= 151; i++) {
-    await getPokemon(i);
+const loadPokedex = async (pageNumber = 1) => {
+  const pokePerPage = pokeCount.value;
+  const url = `https://pokeapi.co/api/v2/pokemon?limit=${pokePerPage}&offset=${
+    pokePerPage * (pageNumber - 1)
+  }`;
+  const response = await fetch(url);
+  const { results, next, previous } = await response.json();
+
+  return {
+    results,
+    next,
+    previous,
+  };
+};
+
+const loadPokemons = async (pageNumber) => {
+  const { results } = await loadPokedex(pageNumber);
+
+  for (const pokemon of results) {
+    await getPokemon(pokemon);
   }
 };
 
-const getPokemon = async (id) => {
-  const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
-  const res = await fetch(url);
+const getPokemon = async (pokemon) => {
+  const res = await fetch(pokemon.url);
   const data = await res.json();
+
   createPokemonBox(data);
 };
 
@@ -48,24 +69,28 @@ const createPokemonBox = (pokemon) => {
 
   const pokemonHtml = `
   <img
-          class="poke-img"
-          src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/${id}.png"
-          alt=""
-        />
-        <h3 class="poke-name">${name}</h3>
-        <p class="poke-id"># ${id}</p>
-        <p class="poke-weight">${weight} kg</p>
-        <p class="poke-type">Type : ${type}</p>
+    class="poke-img"
+    src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/${id}.png"
+    alt=""
+  />
+  <h3 class="poke-name">${name}</h3>
+  <p class="poke-id"># ${id}</p>
+  <p class="poke-weight">${weight} kg</p>
+  <p class="poke-type">Type : ${type}</p>
   `;
 
   pokemonEl.innerHTML = pokemonHtml;
   pokeContainer.appendChild(pokemonEl);
 };
 
-initPokemon();
+const clearAllPokemons = () => {
+  pokeContainer.innerHTML = "";
+};
 
-searchInput.addEventListener("input", function (e) {
-  e.preventDefault();
+pokeSearchForm.addEventListener("submit", (e) => e.preventDefault());
+
+// TODO: Debounce mechanism can be added.
+searchInput.addEventListener("input", function () {
   let search = searchInput.value;
   const pokeName = document.querySelectorAll(".poke-name");
 
@@ -77,3 +102,23 @@ searchInput.addEventListener("input", function (e) {
     }
   });
 });
+
+prevBtn.addEventListener("click", () => {
+  if (page > 1) {
+    clearAllPokemons();
+
+    page = page - 1; // Decrement page
+
+    loadPokemons(page); // Load previous page
+  }
+});
+
+nextBtn.addEventListener("click", () => {
+  clearAllPokemons();
+
+  page = page + 1; // Increment page
+
+  loadPokemons(page); // Load next page
+});
+
+loadPokemons(page);
