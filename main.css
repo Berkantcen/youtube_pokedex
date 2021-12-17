@@ -85,6 +85,10 @@ button {
   margin: 10px auto;
 }
 
+.poke-box .poke-name {
+  text-transform: capitalize;
+}
+
 .poke-navigation {
   height: 100px;
   display: flex;
