@@ -1,4 +1,3 @@
-import './page.js';
 import { colors, pokedexURL } from "./constants.js";
 import { Pokedex } from "./Pokedex.js";
 
@@ -22,7 +21,7 @@ async function loadNextPageAndRender() {
 
 function createPokemonBox(pokemon) {
   const { name, weight } = pokemon;
-  const id = pokemon.toString().padStart(3, "0");
+  const id = pokemon.id.toString().padStart(3, "0");
   const type = pokemon.types[0].type.name
 
   const pokemonEl = document.createElement("div");
